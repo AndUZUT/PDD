@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+
+<script type="text/javascript" src="js/validator.js"></script>
+<link rel="stylesheet" href="css/theme.green.css">
+<script type="text/javascript" src="js/jquery.tablesorter.js"></script>
+<script type="text/javascript" src="js/jquery.tablesorter.widgets.js"></script>
+
+<style>
+input[id="towar_netto"]::-webkit-outer-spin-button,
+input[id="towar_netto"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+</style>
+</head>
+<body>
+<div class="container col-12">
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="#">LOGO</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+    <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+      <li class="nav-item active">
+        <a class="nav-link" href="http://lcieszynski.zut.edu.pl/fileadmin/DPD/instrukcja_2019.pdf">Instrukcje</a>
+      </li>
+    </ul>
+    <form class="form-inline my-2 my-lg-0">
+
+      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" onclick="koszyk()">
+  Koszyk
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Koszyk</h5>
+        <button type="button" onclick="anuluj()" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      <table id="koszykTablica" class="tablesorter tablesorter-green">
+                    <thead>
+                    <tr>
+                        <th data-sorter="false">Nazwa produktu</th>
+                        <th data-sorter="false">Cena</th>
+                        <th data-sorter="false">Ilość</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+                <div>Dostawa
+                    <select id="dostawca" onchange="koszt()">
+                        <option value="20">Kurier 20zł</option>
+                        <option value="10" selected>Poczta 10zł</option>
+                        <option value="0">Odbiór osobisty 0zł</option>
+                    </select>
+                </div>
+                <div>Do zapłaty: <span id="cenaOgolem"></span> zł </div>
+    </div>
+    <div class="modal-footer">
+					<button onclick="zamow()" type="button" class="btn btn-primary" data-dismiss="modal">Zamów produkty</button>
+					<button onclick="anuluj()" type="button" class="btn btn-secondary" data-dismiss="modal">Anuluj</button>
+	</div>
+    </div>
+  </div>
+</div>
+    </form>
+  </div>
+</nav>
+</div>
+<div class="row">
+
+  <div class="col-0 col-sm-3" style="background-color:silver;">
+  </div>
+  
+  
+  <div class="col-6 col-sm-6" style="background-color:silver;">
+    <form>
+  <div class="form-group row">
+    <label for="towar_name" class="col-sm-2 col-form-label">Produkt</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" id="towar_name" onInput="sprawdzTowarName()">
+	  <div id="towar_name_blad"></div>
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="towar_code" class="col-sm-2 col-form-label">Kod towaru</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" id="towar_code" onInput="sprawdzTowarCode()">
+	  <div id="towar_code_blad"></div>
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="towar_netto" class="col-sm-2 col-form-label">Cena netto</label>
+    <div class="col-sm-10">
+      <input type="number" class="form-control" onchange="sprawdzTowarBrutto()" id="towar_netto" onInput="sprawdzTowarNetto()">
+	  <div id="towar_netto_blad"></div>
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="towar_vat" class="col-sm-2 col-form-label">VAT (w %)</label>
+    <div class="col-sm-10">
+      <input type="number" class="form-control" onchange="sprawdzTowarBrutto()" id="towar_vat" onInput="sprawdzTowarVAT()">
+	  <div id="towar_vat_blad"></div>
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="towar_brutto" class="col-sm-2 col-form-label">Cena brutto</label>
+    <div class="col-sm-10">
+      <input type="number" class="form-control" id="towar_brutto" disabled>
+    </div>
+  </div>
+  <div class="form-group row">
+      <label for="towar_kategoria" class="col-sm-2 col-form-label">Kategoria</label>
+	  <div class="col-sm-10">
+      <select id="towar_kategoria" class="form-control">
+        <option selected>Opcja 1</option>
+        <option>Opcja 2</option>
+		<option>Opcja 3</option>
+      </select>
+	  </div>
+    </div>
+	<fieldset class="form-group" name="t_opcje" onInput="sprawdzTowarOpcje()">
+    <div class="row">
+      <legend class="col-form-label col-sm-2 pt-0">Opcje produktu</legend>
+      <div class="col-sm-10">
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="checkbox" name="towar_opcja1" id="towar_opcja1" value="1">
+          <label class="form-check-label" for="towar_opcja1">
+            Opcja 1
+          </label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="checkbox" name="towar_opcja2" id="towar_opcja2" value="2">
+          <label class="form-check-label" for="towar_opcja2">
+            Opcja 2
+          </label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="checkbox" name="towar_opcja3" id="towar_opcja3" value="3">
+          <label class="form-check-label" for="towar_opcja3">
+            Opcja 3
+          </label>
+        </div>
+		<div class="form-check form-check-inline">
+          <input class="form-check-input" type="checkbox" name="towar_opcja4" id="towar_opcja4" value="4">
+          <label class="form-check-label" for="towar_opcja4">
+            Opcja 4
+          </label>
+        </div>
+		<div class="form-check form-check-inline">
+          <input class="form-check-input" type="checkbox" name="towar_opcja5" id="towar_opcja5" value="5">
+          <label class="form-check-label" for="towar_opcja5">
+            Opcja 5
+          </label>
+        </div>
+		<div id="towar_opcje_blad" class="form-check-inline"></div>
+      </div>
+    </div>
+  </fieldset>
+  <fieldset class="form-group" id="towar_oceny">
+    <div class="row">
+      <legend class="col-form-label col-sm-2 pt-0">Ocena produktu</legend>
+      <div class="col-sm-10">
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" name="towar_ocena" id="gridOcena1" value="1">
+          <label class="form-check-label" for="gridOcena1">
+            1
+          </label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" name="towar_ocena" id="gridOcena2" value="2">
+          <label class="form-check-label" for="gridOcena2">
+            2
+          </label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" name="towar_ocena" id="gridOcena3" value="3" checked>
+          <label class="form-check-label" for="gridOcena3">
+            3
+          </label>
+        </div>
+		<div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" name="towar_ocena" id="gridOcena4" value="4">
+          <label class="form-check-label" for="gridOcena4">
+            4
+          </label>
+        </div>
+		<div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" name="towar_ocena" id="gridOcena5" value="5">
+          <label class="form-check-label" for="gridOcena5">
+            5
+          </label>
+        </div>
+      </div>
+    </div>
+  </fieldset>
+  
+  
+  <div class="form-group row">
+	 <label class="col-form-label col-sm-2" for="inputZdjecie">Zdjęcie</label>
+	 <div class="custom-file col-sm-10">
+    <div class="file btn">
+	<input type="file" name="inputZdjecie" id="towar_zdjecie"/>
+	</div>
+</div>
+    </div>
+  
+  <div class="form-group row">
+    <div class="col-sm-12 col-form-label text-center">
+      <button type="button" id="przyciskTest" class="btn btn-primary" onClick="dodajProdukt()">Wyślij</button>
+    </div>
+  </div>
+</form>
+<select id="opcje_sortowania">
+<option selected>Cena od najniższej</option>
+<option>Cena od najwyższej</option>
+<option>Ocena od najniższej</option>
+<option>Ocena od najwyższej</option>
+<option>Nazwa od A</option>
+<option>Nazwa od Z</option>
+</select>
+
+<button href="#" id="myTrigger">Sortuj</button>
+<table id="myTable" class="tablesorter tablesorter-green">
+  <thead>
+    <tr>
+      <th>Nazwa</th>
+      <th data-sorter="false">Kod</th>
+      <th data-sorter="false">Cena netto</th>
+      <th data-sorter="false">VAT</th>
+      <th>Cena brutto</th>
+	  <th data-sorter="false">Kategoria</th>
+	  <th data-sorter="false">Opcje</th>
+	  <th>Ocena</th>
+	  <th data-sorter="false">Zdjęcie towaru</th>
+	  <th data-sorter="false">Usuń</th>
+	  <th data-sorter="false">Edytuj</th>
+	  <th data-sorter="false">Dodaj do koszyka</th>
+    </tr>
+  </thead>
+  <tbody>
+  </tbody>
+</table>
+  </div>
+  
+  
+	<div class="col-6 col-sm-3" style="background-color:silver;">
+		<div class="card-body" style="background-color:silver;">
+		<h5 class="card-title">Wizytówka</h5>
+		<h6 class="card-subtitle mb-2 text-muted">Andrzej Ubych</h6>
+		<p class="card-text">Grupa 32C, Album 39472</p>
+		</div>
+	</div>
+</div>
+
+
+<div class="container col-12">
+	<nav class="navbar sticky-footer navbar-expand-lg navbar-dark bg-dark">
+	<p class="text-primary ">Stopka</p>
+	</nav>
+</div>
+
+</body>
+</html>
